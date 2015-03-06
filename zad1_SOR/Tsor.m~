@@ -1,0 +1,8 @@
+function [ T, c ] = Tsor( A, omega )
+%TSOR Funkcija vraca matricu iteracija Tsor i vektor csor potrebne za SOR metodu.
+    D = diag(diag(A));
+    L = tril(A,-1);
+    U = triu(A, 1);
+
+end
+
