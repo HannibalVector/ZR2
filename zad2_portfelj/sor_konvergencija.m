@@ -9,5 +9,6 @@ function [ rho ] = sor_konvergencija( A )
     plot(omega, rho);
     xlabel('omega');
     ylabel('rho(Tsor)');
+    title('Spektralni radijus matrice iteracija u ovisnosti o omega');
 end
 
