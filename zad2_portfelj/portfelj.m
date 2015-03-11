@@ -28,16 +28,16 @@ omega_povrat_pcg
 
 %plot
 figure;
-plot(res1_sor, 'r--'); hold on;
-plot(res1_pcg, 'b-o');
+semilogy(res1_sor, 'r--'); hold on;
+semilogy(res1_pcg, 'b-o');
 xlabel('iteracija');
 ylabel('rel. norma reziduala');
 title('Relativna norma reziduala - porftelj s najmanjom varijancom');
 legend('SOR', 'PCG');
 
 figure;
-plot(res2_sor, 'r--'); hold on;
-plot(res2_pcg, 'b-o');
+semilogy(res2_sor, 'r--'); hold on;
+semilogy(res2_pcg, 'b-o');
 xlabel('iteracija');
 ylabel('rel. norma reziduala');
 title('Relativna norma reziduala - porftelj s najmanjom varijancom i ocekivanim povratom');
