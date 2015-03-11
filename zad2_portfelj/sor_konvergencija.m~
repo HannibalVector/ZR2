@@ -1,8 +1,0 @@
-function [ ] = sor_konvergencija( A )
-%SOR_KONVERGENCIJA Summary of this function goes here
-%   Detailed explanation goes here
-    omega = (0:0.1:2)';
-    rho = 
-
-end
-
