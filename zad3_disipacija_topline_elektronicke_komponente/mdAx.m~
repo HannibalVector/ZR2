@@ -1,0 +1,5 @@
+function [ y ] = mdAx( x )
+    S = sparse(A);
+    y = A*x;
+end
+
