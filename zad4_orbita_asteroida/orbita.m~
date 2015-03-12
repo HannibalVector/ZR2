@@ -1,0 +1,10 @@
+load('model_orbita_polozaji.mat');
+f1 = @(p) [ p(:, 1).*p(:, 2) p(:, 2).^2 p(:, 1) p(:, 2) ones(size(p,1),1)];
+p = [p1'; p2'; p3'; p4'; p5'];
+A = f1(p);
+b = -p(:, 1).^2;
+a = A\b;
+
+f = @(x, y) x.^2 + a'*f1([x y]);
+
+x = -5:0.1:5;
