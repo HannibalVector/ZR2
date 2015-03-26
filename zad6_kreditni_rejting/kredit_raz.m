@@ -12,6 +12,7 @@ set(gca,'XTickLabel', { 'AAA', 'AA', 'A', 'BBB', 'BB', 'B', 'CCC', 'D' } );
 xlabel('stanje');
 ylabel('gustoca');
 axis([0.5 8.5 0 1]);
+grid on;
 
 for i=1:(n+1)
     title(sprintf('iteracija br. %d', i));
