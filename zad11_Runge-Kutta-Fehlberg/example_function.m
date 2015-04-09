@@ -1,0 +1,10 @@
+function [ value ] = example_function( x, y )
+%F Summary of this function goes here
+%   Detailed explanation goes here
+    if (x <= pi)
+        value = 1 - y;
+    else
+        value = -5*y;
+    end
+end
+

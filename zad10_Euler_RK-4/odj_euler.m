@@ -1,5 +1,5 @@
-function [ x, y ] = Euler( f, y0, a, b, n )
-%EULER Summary of this function goes here
+function [ x, y ] = odj_euler( f, y0, a, b, n )
+%ODJ_EULER Summary of this function goes here
 
     h = (b-a)/n;
     y = zeros(n+1, 1);
