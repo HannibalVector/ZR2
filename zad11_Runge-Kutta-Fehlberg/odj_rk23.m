@@ -1,4 +1,4 @@
-function [ x_unif, y_unif, x_var, y_var ] = odj_rk23( f, y0, a, b, tol )
+function [ X, Y ] = odj_rk23( f, y0, a, b, tol )
 %ODJ_RK4 Summary of this function goes here
 
     alpha = 0.9;
@@ -13,37 +13,28 @@ function [ x_unif, y_unif, x_var, y_var ] = odj_rk23( f, y0, a, b, tol )
     
     h_novi = @(h, y3, y2) alpha*h*((tol / abs(y3 - y2))^(1/3)); 
     
-    y3 = y0;
     y2 = y0;
-    x = a;
+    X = a;
     i = 1;
+    h = b - a;
+    y2(2) = y2(1) + h*phi2(X(1), y2(1), h);
+    y3 = y2(1) + h*phi3(X(1), y2(1), h);
     
-    while(x(i) < b)
-        h = b - a;
-        y2 = [y2; y2(i) + h*phi2(x(i), y2(i), h)];
-        y3 = y2(i) + h*phi3(x(i), y2(i), h);
+    while(X(i) < b)
+        h = h_novi(h, y3, y2(i));
+        y2(i+1) = y2(i) + h*phi2(X(i), y2(i), h);
+        y3 = y2(i) + h*phi3(X(i), y2(i), h);
         while (abs(y3 - y2(i+1)) > tol)
             h = h_novi(h, y3, y2(i+1));
-            if (x(i) + h > b)
-                h = b - x(i);
+            if (X(i) + h > b)
+                h = b - X(i);
             end
-            y2(i+1) = y2(i) + h*phi2(x(i), y2(i), h);
-            y3 = y2(i) + h*phi3(x(i), y2(i), h);
+            y2(i+1) = y2(i) + h*phi2(X(i), y2(i), h);
+            y3 = y2(i) + h*phi3(X(i), y2(i), h);
         end
-        x = [x; x(i) + h];
+        X(i+1) = X(i) + h;
         i = i+1;
     end
     
-    y_var = y2;
-    x_var = x;
-    
-    n = size(y_var, 1);
-    y_unif = zeros(n, 1);
-    h = (b - a)/n;
-    x_unif = (a:h:b)';
-    y_unif(1) = y0;
-    
-    for i = 1:n
-        y_unif(i+1) = y_unif(i) + h*phi2(x_unif(i), y_unif(i), h);
-    end
+    Y = y2;
 end

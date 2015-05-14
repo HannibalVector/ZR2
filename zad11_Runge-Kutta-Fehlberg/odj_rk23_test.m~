@@ -4,24 +4,23 @@ x0 = 0; x1 = 4;
 tol = 1e-5;
 y_exact = @(x)  example_solution(x);
 
-% Euler *************************************************************
-[ x2_nodes,  y2_approx, x3_nodes, y3_approx ] = odj_rk23(f, y0, x0, x1, tol);
+[ x_unif,  y_unif, x_var, y_var ] = odj_rk23(f, y0, x0, x1, tol);
 
-plot(x3_nodes, y3_approx, '*-m');
+[ X2, Y2 ]
+
+plot(x_var, y_var, '*-r');
 hold on;
-plot(x2_nodes, y2_approx, 'o-');
+plot(x_unif,  y_unif, 'o-');
 xlabel('x');
 ylabel('y');
 title('Runge-Kutta-Fehlbergova metoda');
 
-fplot(y_exact, [0 4], 'r-');
+fplot(y_exact, [0 4], 'k-');
 legend('aproksimativno rjesenje RK-23', 'aproksimativno rjesenje RK-2','egzaktno rjesenje')
 
-n = size(x3_nodes, 1);
+n = size(x_var, 1);
 y_exact_vec = zeros(n, 1);
 for i = 1:n
-    y_exact_vec(i) = y_exact(x3_nodes(i));
+    y_exact_vec(i) = y_exact(x_var(i));
 end
-sprintf('Maksimalna greska %e', max(abs(y3_approx - y_exact_vec)))
-
-y_exact_vec
+sprintf('Maksimalna greska %e', max(abs(y_var - y_exact_vec)))

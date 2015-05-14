@@ -1,0 +1,7 @@
+function [ phi ] = AdamsMoulton3( f )
+%ADAMS_MOULTON Summary of this function goes here
+%   Detailed explanation goes here
+phi = 
+
+end
+

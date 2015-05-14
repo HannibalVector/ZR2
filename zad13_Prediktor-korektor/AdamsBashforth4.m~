@@ -1,0 +1,9 @@
+function [ phi ] = Adams-Bashforth( f )
+%ADAMS-BASHFORTH Summary of this function goes here
+%   Detailed explanation goes here
+
+phi 
+
+
+end
+

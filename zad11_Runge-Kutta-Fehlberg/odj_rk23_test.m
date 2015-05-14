@@ -4,21 +4,30 @@ x0 = 0; x1 = 4;
 tol = 1e-5;
 y_exact = @(x)  example_solution(x);
 
-[ x_unif,  y_unif, x_var, y_var ] = odj_rk23(f, y0, x0, x1, tol);
+[ X23,  Y23 ] = odj_rk23(f, y0, x0, x1, tol);
 
-plot(x_var, y_var, '*-r');
+n = size(X23, 2);
+
+[ X2, Y2 ] = odj_rk2(f, y0, x0, x1, n);
+
+plot(X23, Y23, '*-r');
 hold on;
-plot(x_unif,  y_unif, 'o-');
+plot(X2,  Y2, '-');
 xlabel('x');
 ylabel('y');
 title('Runge-Kutta-Fehlbergova metoda');
 
 fplot(y_exact, [0 4], 'k-');
-legend('aproksimativno rjesenje RK-23', 'aproksimativno rjesenje RK-2','egzaktno rjesenje')
+legend('aproksimativno rjesenje RK-23', 'aproksimativno rjesenje RK-2','egzaktno rjesenje', 'Location', 'NorthWest')
 
-n = size(x_var, 1);
-y_exact_vec = zeros(n, 1);
+y_exact_vec = zeros(size(Y23));
 for i = 1:n
-    y_exact_vec(i) = y_exact(x_var(i));
+    y_exact_vec(i) = y_exact(X23(i));
 end
-sprintf('Maksimalna greska %e', max(abs(y_var - y_exact_vec)))
+sprintf('Maksimalna greska RK23 %e', max(abs(Y23 - y_exact_vec)))
+
+y_exact_vec2 = zeros(size(Y2));
+for i = 1:n
+    y_exact_vec2(i) = y_exact(X2(i));
+end
+sprintf('Maksimalna greska RK2 %e', max(abs(y_exact_vec2 - Y2)))
