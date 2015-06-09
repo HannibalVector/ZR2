@@ -25,7 +25,7 @@ for n = 20:50
     hold off
     title(sprintf('n = %d', n));
     legend('egzaktno rjesenje', 'Crank-Nicolson', 'RK2');
-    pause(0.1)
+    pause(0.01)
 end
 
 figure

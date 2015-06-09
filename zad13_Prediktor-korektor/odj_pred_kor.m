@@ -1,6 +1,7 @@
 function [ x, y ] = odj_pred_kor( f, a, b, y0, n, m )
 %ODJ_PRED_KOR Summary of this function goes here
 %   Detailed explanation goes here
+addpath ../zad10_Euler_RK-4/
 
 h = (b - a) / n;
 x = (a:h:b)';
