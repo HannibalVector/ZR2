@@ -12,4 +12,6 @@ hold on
 
 [x, y] = odj_pred_kor(f, a, b, y0, n, m);
 plot(x, y, 'ro')
-legend('aproksimativno rjesenje', 'egzaktno rjesenje')
+legend('egzaktno rjesenje', 'aproksimativno rjesenje')
+
+max(abs(y_exact(x) - y))
