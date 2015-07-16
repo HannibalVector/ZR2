@@ -1,0 +1,487 @@
+%% LyX 2.1.3 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[croatian]{article}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=3cm,bmargin=3cm,lmargin=3cm,rmargin=3cm}
+\setlength{\parskip}{\medskipamount}
+\setlength{\parindent}{0pt}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{esint}
+\onehalfspacing
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{fontspec}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\setmainfont{Droid Sans}
+
+\makeatother
+
+\usepackage{babel}
+\usepackage{listings}
+\renewcommand{\lstlistingname}{Listing}
+
+\begin{document}
+
+\title{Dizajn šipke sa željenim termičkim svojstvima\\
+{\large{}projektni zadatak iz kolegija Znanstveno računanje 2}}
+
+
+\author{Ilijan Kotarac}
+
+\maketitle
+
+\section{Problem}
+
+Potrebno je dizajnirati metalnu šipku koja je izlivena od legure dva
+materijala: \textbf{insulatinuma} i \textbf{conductivituma}. Relativna
+gustoća insulatinuma u šipci dana je kao funkcija položaja duž duljine
+šipke, $\rho(x).$ Na početnom kraju šipke, za $x=0,$ temperatura
+je zadana i iznosi $850K.$ Drugi kraj šipke ne smije prijeći temperaturu
+$375K.$
+
+Potrebno je odrediti nepoznatu relativnu gustoću $\rho(x)$ te duljinu
+šipke $L$ tako da je trošak izrade minimalan. Jedan centimetar insulatinuma
+košta 80\$, a jedan centimetar conductivituma 30\$. Ukupna cijena
+šipke dana je izrazom:
+\begin{equation}
+c=\int_{0}^{L}\left[8\rho(x)+3(1-\rho(x))\right]dx.\label{eq:trosak}
+\end{equation}
+
+
+Distribucija temperature u šipci dana je toplinskom jednadžbom:
+\begin{equation}
+\kappa(x)u\prime\prime(x)+\kappa\prime(x)u\prime(x)=0,\label{dj}
+\end{equation}
+gdje je $u$ temperatura šipke na položaju $x,$ a $\kappa(x)$ termička
+vodljivost šipke u točki $x$ koja ovisi o njenom sastavu i povezana
+je sa gustoćom sljedećom relacijom:
+\begin{equation}
+\kappa(x)=4\rho(x)^{2}-5\rho(x)+2.\label{kappa}
+\end{equation}
+Pripadni rubni uvjeti glase:
+\begin{eqnarray}
+u(0) & = & 850,\label{ru}\\
+u\prime(L)+0.01u(L) & = & 0.\nonumber 
+\end{eqnarray}
+Prvi rubni uvjet označava da se početni kraj šipke drži na temperaturi
+$850K,$ a drugi rubni uvjet označava da se na njemu događa apsorpcija
+topline.
+
+Dakle, cilj je varirajući nepoznate parametre $\rho(x)$ i $L$ minimizirati
+funkciju troška \eqref{eq:trosak} uz ograničenja
+\begin{gather*}
+0\leq\rho(x)\leq1\\
+0\leq L<\infty\\
+u(L)\leq375K,
+\end{gather*}
+pri čemu je zadnji uvjet nelinearan i dobiva se izvrijednjavanjem
+rješenja rubnog problema \eqref{kappa} + \eqref{ru}.
+
+
+\section{Diskretizacija}
+
+Nepoznata funkcija $\rho$ aproksimirana je kubičnim splineom sa $s$
+čvorova. Za to je korištena Matlabova funkcija 
+\begin{lstlisting}
+spline(x, y)
+\end{lstlisting}
+ gdje su x i y vektori koji definiraju čvorove interpolacije.
+
+\begin{figure}
+\noindent \begin{centering}
+\includegraphics[width=1\textwidth,bb = 0 0 200 100, draft, type=eps]{skica.pdf}
+\par\end{centering}
+
+\protect\caption{Na slici je prikazan učvršćeni štap. $u(x,\,t)$ označava vertikalni
+otklon (progib).\label{fig:koordinatni sustav}}
+\end{figure}
+
+
+Uz određene početne uvjete moguće je postići da svaka točka štapa
+titra istom frekvencijom, ali amplituda titranja može ovisiti o položaju
+$x.$ Takve frekvencije zovu se vlastite frekvencije, a pripadna funkcija
+kojom opisujemo transverzalni otklon će u tom slučaju imati oblik:
+\[
+u(x,\,t)=y(x)e^{i\omega t},
+\]
+gdje je $\omega$ vlastita (kružna) frekvencija, a $y(x)$ amplituda
+titranja koja ovisi o položaju $x.$ Uvrštavanjem u jednadžbu \eqref{eq:PDJ}
+dobivamo svojstveni problem:
+\begin{equation}
+\frac{d^{2}}{dx^{2}}\left(EI\frac{d^{2}y}{dx^{2}}\right)=\rho_{x}\omega^{2}y.\label{eq:Svojstveni problem}
+\end{equation}
+Iz rubnih uvjeta \eqref{eq:Rubni uvjeti PDJ} dobivamo rubne uvjete
+za svojstveni problem \eqref{eq:Svojstveni problem}:
+\begin{align}
+y(0) & =y(L)=0,\label{eq:Rubni uvjeti za svojstveni problem}\\
+y^{\prime\prime}(0) & =y^{\prime\prime}(L)=0.\nonumber 
+\end{align}
+
+
+
+\section{Homogeni štap konstantnog presjeka}
+
+
+\subsection{Egzaktno rješenje svojstvenog problema}
+
+Pretpostavimo da štap ima konstantan presjek $S$ duž osi $x,$ i
+da je homogen, tako da su veličine $E,\,I$ i $\rho_{x}$ konstantne.
+Sada jednadžbu \eqref{eq:Svojstveni problem} možemo pojednostavniti:
+\begin{equation}
+\frac{d^{4}y}{dx^{4}}=\frac{\rho_{x}}{EI}\omega^{2}y.\label{eq:Svojstveni problem za konstantni presjek}
+\end{equation}
+
+
+Egzaktnim rješavanjem dobivamo svojstvene vrijednosti:
+\[
+\lambda_{n}=\frac{\rho_{x}}{EI}\omega_{n}^{2}=\left(\frac{n\pi}{L}\right)^{4},\quad n=1,\,2,\,3,\,\dots,
+\]
+iz čega slijedi formula za svojstvene frekvencije:
+\[
+\omega_{n}=\sqrt{\frac{EI}{\rho_{x}}}\left(\frac{n\pi}{L}\right)^{2},\quad n=1,\,2,\,3,\,\dots.
+\]
+Pripadne svojstvene funkcije su:
+\begin{equation}
+y_{n}(x)=c\sin\left(\frac{n\pi x}{L}\right),\label{eq:egzaktne funkcije}
+\end{equation}
+gdje je $c\in\mathbb{R}$ proizvoljna konstanta.
+
+Ako na štap djelujemo periodičkom vanjskom silom koja odgovara nekoj
+od ovih vlastitih frekvencija, dolazi do pojave rezonancije, sve većih
+oscilacija i pucanja štapa. U praksi je dovoljno naći nekoliko najmanjih
+svojstvenih frekvencija $\omega_{n},$ jer su ostale prevelike da
+bi se prirodno izazvale.
+
+
+\subsection{Diskretizacija}
+
+Segment $\left[0,\,L\right]$ dijelimo uniformnom mrežom na $N+1$
+podintervala i u svakoj točki mreže četvrtu derivaciju aproksimiramo
+četvrtom centralnom razlikom. Duljina podintervala iznosi 
+\begin{equation}
+h=\frac{L}{N+1},\label{eq:duljina podintervala}
+\end{equation}
+te uvodimo oznaku $f_{\alpha}:=f\left(\alpha h\right).$
+
+Sada su čvorovi:
+\[
+x_{i}=ih,\quad i=0,\,1,\,\dots,\,N+1.
+\]
+Približna vrijednost četvrte derivacije dana je četvrtim centralnim
+razlikama. U unutrašnjim čvorovima mreže imamo:
+\begin{equation}
+y_{i}^{\left(4\right)}\approx\frac{y_{i-2}-4y_{i-1}+6y_{i}-4y_{i+1}+y_{i+2}}{h^{4}},\quad i=1,\,\dots,\,N,\label{eq:=00010Cetvrta centralna razlika}
+\end{equation}
+ pri čemu se javljaju vrijednosti $y_{-1}$ i $y_{N+2}$ u dva fiktivna
+vanjska čvora $x_{-1}$ i $x_{N+2}.$
+
+Uvrštavanjem \eqref{eq:=00010Cetvrta centralna razlika} u \eqref{eq:Svojstveni problem za konstantni presjek}
+za svaki unutrašnji čvor imamo:
+\[
+y_{i-2}-4y_{i-1}+6y_{i}-4y_{i+1}+y_{i+2}=\frac{\rho_{x}h^{4}\omega^{2}}{EI}y_{i},\quad i=1,\,\dots,\,N.
+\]
+
+
+Još ostaje eliminirati vrijednosti u fiktivnim čvorovima. Iz rubnih
+uvjeta $y(0)=y(L)=0$ imamo $y_{0}=y_{L}=0.$ Rubne uvjete $y^{\prime\prime}(0)=y^{\prime\prime}(L)=0$
+ćemo primijeniti nakon što diskretiziramo drugu derivaciju pomoću
+druge centralne razlike:
+\begin{equation}
+y_{i}^{\prime\prime}\approx\frac{y_{i-1}-2y_{i}+y_{i+1}}{h^{2}}.\label{eq:Druga centralna razlika}
+\end{equation}
+Sada imamo 
+\[
+y_{0}^{\prime\prime}\approx\frac{y_{-1}-2y_{0}+y_{1}}{h^{2}}=0,\quad y_{N}^{\prime\prime}\approx\frac{y_{N}-2y_{N+1}+y_{N+1}}{h^{2}}=0,
+\]
+iz čega slijedi:
+\[
+y_{-1}=-y_{1},\quad y_{N+2}=-y_{N}.
+\]
+
+
+Time smo dobili sljedeći linearni sustav:
+
+\noindent 
+\[
+\begin{cases}
+5y_{1}-4y_{2}+y_{3} & =\frac{\rho_{x}h^{4}\omega^{2}}{EI}y_{1},\\
+y_{i-2}-4y_{i-1}+6y_{i}-4y_{i+1}+y_{i+2} & =\frac{\rho_{x}h^{4}\omega^{2}}{EI}y_{i},\quad i=2,\,\dots,\,N-1,\\
+y_{N-1}-4y_{N-1}+5y_{N} & =\frac{\rho_{x}h^{4}\omega^{2}}{EI}y_{N},
+\end{cases}
+\]
+što zapisano matrično izgleda ovako:
+\[
+T(N)\,y=\frac{\rho_{x}h^{4}\omega^{2}}{EI}y,
+\]
+gdje je 
+\[
+T(N)=\left[\begin{array}{rrrrrrr}
+5 & -4 & 1\\
+-4 & 6 & -4 & 1\\
+1 & -4 & 6 & -4 & 1\\
+ & \ddots & \ddots & \ddots & \ddots & \ddots\\
+ &  & 1 & -4 & 6 & -4 & 1\\
+ &  &  & 1 & -4 & 6 & -4\\
+ &  &  &  & 1 & -4 & 5
+\end{array}\right].
+\]
+Dakle dobili smo algebarski problem svojstvenih vrijednosti.
+
+
+\subsection{Numeričko rješavanje algebarskog problema svojstvenih vrijednosti.
+Kvaliteta aproksimacije svojstvenih frekvencija i funkcija u ovisnosti
+o N}
+
+Radi jednostavnosti uzimamo $\rho_{x}=L=E=I=1$ te za zadani $N$
+svojstvene vrijednosti i vektore računamo u programskom paketu \texttt{MATLAB}
+funkciom \texttt{eig(T(N))}.
+
+Odaberemo li $N$ čvorova, dobivamo matricu dimenzija $N\times N$
+koja ima $N$ svojstvenih vrijednosti. Broj $N$ variran je u vrijednostima
+iz skupa $\left\{ 10,\,32,\,109,\,329\right\} .$
+
+Naime, želimo postići da se mreže preklapaju u određenim unutrašnjim
+čvorovima u kojima ćemo uspoređivati dobivene aproksimativne svojstvene
+funkcije. Ako je $N_{1}$ postojeći broj čvorova, a $N_{2}$ broj
+čvorova finije razdiobe koji nastaje kad svaki podinterval prve razdiobe
+podijelimo na $p$ dijelova, iz \eqref{eq:duljina podintervala} slijedi
+sljedeća formula:
+\begin{eqnarray*}
+h_{1} & = & ph_{2}\\
+\frac{L}{N_{1}+1} & = & p\frac{L}{N_{2}+1}\\
+N_{2} & = & p(N_{1}+1)-1,
+\end{eqnarray*}
+pa za $N_{1}=10$ i $p=3,\,10,\,30$ dobivamo $N_{2}=32,\,109,\,329.$
+
+Za svaku vrijednost od $N$ uspoređeno je odstupanje 10 najmanjih
+svojstvenih frekvencija i pripadnih 10 svojstvenih funkcija od egzaktnih
+vrijednosti.
+
+Usporedba prvih 10 svojstvenih frekvencija sa egzaktnim vrijednostima
+za svaki $N$ prikazano je na Slici \ref{fig:10 frekvencija}.
+
+\begin{figure}
+\noindent \begin{centering}
+\includegraphics[width=1\textwidth,bb = 0 0 200 100, draft, type=eps]{frekvencije_o_N.pdf}
+\par\end{centering}
+
+\protect\caption{Prvih 10 svojstvenih frekvencija u ovisnosti o finoći diskretizacije
+$N,$ uspoređeno sa prvih 10 egzaktnih svojstvenih vrijednosti.\label{fig:10 frekvencija}}
+\end{figure}
+
+
+Kao mjera odstupanja uzeta je norma odstupanja:
+\begin{equation}
+\left\Vert \mathbf{\omega}-\mathbf{\omega_{\text{egz}}}\right\Vert _{2},\label{eq:norma odstupanja frekvencija}
+\end{equation}
+gdje je $\mathbf{\omega}$ vektor koji sadrži 10 najmanjih svojstvenih
+frekvencija, a $\mathbf{\omega_{\text{egz}}}$ vektor koji sadrži
+10 najmanjih egzaktnih svojstvenih vrijednosti. Ovisnost veličine
+\eqref{eq:norma odstupanja frekvencija} o broju $N$ prikazana je
+na Slici \ref{fig:ukupno odstupanje}. Apsolutne vrijednosti komponenti
+vektora $\mathbf{\omega}-\mathbf{\omega_{\text{egz}}}$ (odstupanje
+$\left|\omega_{n}-\omega_{n,\,egz}\right|$u ovisnosti o $n,$ za
+različite $N$) prikazane su na Slici \ref{fig:odstupanje po frekvencijama}.
+Iz ovoga se zorno vidi da se pri određivanju većih svojstvenih vrijednosti
+radi veća greška i da se za manji $N$ također radi veća greška.
+
+\begin{figure}
+\noindent \begin{centering}
+\includegraphics[width=1\textwidth,bb = 0 0 200 100, draft, type=eps]{odstupanje_ukupno.pdf}
+\par\end{centering}
+
+\protect\caption{Ovisnost veličine \eqref{eq:norma odstupanja frekvencija}, kojom
+mjerimo kvalitetu aproksimacije prvih 10 svojstvenih vrijednosti,
+o finoći diskretizacije $N.$\label{fig:ukupno odstupanje}}
+\end{figure}
+\begin{figure}
+\noindent \begin{centering}
+\includegraphics[width=1\textwidth,bb = 0 0 200 100, draft, type=eps]{odstupanje_frekvencija.pdf}
+\par\end{centering}
+
+\protect\caption{Odstupanje $\left|\omega_{n}-\omega_{n,\,egz}\right|$u ovisnosti
+o $n,$ za različite $N.$\label{fig:odstupanje po frekvencijama}}
+\end{figure}
+
+
+Kvaliteta aproksimacije svojstvenih funkcija mjerena je pomoću matrične
+norme
+\begin{equation}
+\left\Vert \mathbf{V}-\mathbf{V_{\text{egz}}}\right\Vert _{2},\label{eq:odstupanje funkcija}
+\end{equation}
+gdje je $\mathbf{V}$ matrica tipa $N\times10$ koja sadrži prvih
+10 svojstvenih vektora, ali tako da vrijednosti u svakom retku svakog
+od vektora odgovaraju vrijednostima funkcije $y$ u 10 istih, ekvidistantnih
+čvorova koji prekrivaju čitavi segment $\left[0,\,L\right]$. Na ovaj
+način omogućena je usporedba kvalitete dobivenih svojstvenih vektora
+za različitu finoću diskretizacije (različit $N$). Također, kako
+bi se vektori mogli uspoređivati vektori su normalizirani i ,,naštimani''
+tako da budu rastuće funkcije u 1. čvoru. Ukoliko bi u prvom čvoru
+bili negativni, pomnoženi su s $-1,$ tako da odgovaraju sinusima
+iz relacije \eqref{eq:egzaktne funkcije}.
+
+Ovisnost veličine \eqref{eq:odstupanje funkcija} o broju $N$ prikazana
+je na Slici \ref{fig:odstupanje funkcija ukupno}. Usporedba prve
+četiri svojstvene funkcije, dobivene za $N=32,$ s egzaktnim rješenjem
+prikazana je na Slici \ref{fig:5 svojstvenih funkcija}.
+
+\begin{figure}
+\noindent \begin{centering}
+\includegraphics[width=1\textwidth,bb = 0 0 200 100, draft, type=eps]{odstupanje_funkcija.pdf}
+\par\end{centering}
+
+\protect\caption{Odstupanje $\left\Vert \mathbf{V}-\mathbf{V_{\text{egz}}}\right\Vert _{2},$
+u ovisnosti o $N.$\label{fig:odstupanje funkcija ukupno}}
+\end{figure}
+
+
+\begin{figure}
+\noindent \begin{centering}
+\includegraphics[width=1\textwidth,bb = 0 0 200 100, draft, type=eps]{funkcije_N30.pdf}
+\par\end{centering}
+
+\protect\caption{Usporedba prve četiri svojstvene funkcije, dobivene za $N=32,$ $E=I=\rho_{x}=1,$
+s egzaktnim rješenjem. \label{fig:5 svojstvenih funkcija}}
+\end{figure}
+
+
+
+\section{Homogeni štap varijabilnog presjeka}
+
+
+\subsection{Svojstveni problem}
+
+Sad pretpostavljamo da štap ima pravokutan presjek okomito na centralnu
+liniju štapa, ali da je površina tog presjeka $S(x)$ funkcija koordinate
+$x.$ Pretpostavimo da štap ima konstantnu širinu $b$ okomito na
+ravninu otklona (okomito na ravninu papira na Slici \#\#), a da debljina
+$d(x)$, koja leži u ravnini papira, okomito na centralnu liniju,
+varira linearno od debljine $d\left(x=0\right)=d_{0},$ do $d\left(x=L\right)=d_{L}.$
+Sada je
+\begin{equation}
+d(x)=d_{0}+\left(d_{L}-d_{0}\right)\frac{x}{L},\quad x\in\left[0,\,L\right],\label{eq:debljina}
+\end{equation}
+a pripadna površina poprečnog presjeka i moment inercije iznose:
+\begin{equation}
+S(x)=b\,d(x),\quad I(x)=\frac{1}{12}b\,\left[d(x)\right]^{3}.\label{eq:presjek i inercija}
+\end{equation}
+Ako dodatno pretpostavimo da je štap homogen, od materijala konstantne
+volumne gustoće $\rho$ i Youngovog modula elastičnosti $E$, imamo
+izraz za linijsku gustoću štapa:
+\[
+\rho_{x}(x)=S(x)\rho
+\]
+te pripadni svojstveni problem:
+\begin{equation}
+\frac{d^{2}}{dx^{2}}\left(I(x)\frac{d^{2}y}{dx^{2}}\right)=S(x)\frac{\rho}{E}\omega^{2}y.\label{eq:Svojstveni problem za varijabilni presjek}
+\end{equation}
+
+
+
+\subsection{Diskretizacija}
+
+Jednadžbu \eqref{eq:Svojstveni problem za varijabilni presjek} diskretiziramo
+tako da obje druge derivacije aproksimiramo drugom centralnom razlikom
+\eqref{eq:Druga centralna razlika} u odgovarajućim čvorovima mreže.
+Time dobivamo sljedeći sustav:
+\begin{eqnarray*}
+\frac{d^{2}}{dx^{2}}\left(I(x)\frac{y_{i-1}-2y_{i}+y_{i+1}}{h^{2}}\right) & = & \frac{\rho\omega^{2}}{E}S_{i}y_{i},\\
+\frac{1}{h^{4}}\left[I_{i-1}\left(y_{i-2}-2y_{i-1}+y_{i}\right)-2I_{i}\left(y_{i-1}-2y_{i}+y_{i+1}\right)+\right.\\
+\left.+I_{i+1}\left(y_{i}-2y_{i+1}+y_{i+2}\right)\right] & = & \frac{\rho\omega^{2}}{E}S_{i}y_{i},\quad i=1,\,\dots,\,N.
+\end{eqnarray*}
+Vidimo da se ponovno pojavljuju vrijednosti u fiktivnim čvorovima,
+$y_{-1}$ i $y_{N+2}.$ Njih zajedno s vrijednostima u rubnim čvorovima
+ponovno eliminiramo koristeći rubne uvjete:
+\[
+y_{-1}=-y_{1},\quad y_{N+2}=-y_{N},\quad y_{0}=y_{N+1}=0.
+\]
+Time dolazimo do sljedećeg sustava:
+
+\noindent 
+\[
+\begin{cases}
+-2I_{1}\left(-2y_{1}+y_{2}\right)+I_{2}\left(y_{2}-2y_{3}+y_{4}\right) & =\frac{\rho h^{4}\omega^{2}}{E}S_{1}y_{1},\\
+I_{1}\left(-2y_{1}+y_{2}\right)-2I_{2}\left(y_{1}-2y_{2}+y_{3}\right)+I_{3}\left(y_{2}-2y_{3}+y_{4}\right) & =\frac{\rho h^{4}\omega^{2}}{E}S_{2}y_{2},\\
+I_{i-1}\left(y_{i-2}-2y_{i-1}+y_{i}\right)-2I_{i}\left(y_{i-1}-2y_{i}+y_{i+1}\right)+I_{i+1}\left(y_{i}-2y_{i+1}+y_{i+2}\right) & =\frac{\rho h^{4}\omega^{2}}{E}S_{i}y_{i},\quad i=3,\,\dots,\,N-2,\\
+I_{N-2}\left(y_{N-3}-2y_{N-2}+y_{N-1}\right)-2I_{N-1}\left(y_{N-2}-2y_{N-1}+y_{N}\right)+I_{N}\left(y_{N-1}-2y_{N}\right) & =\frac{\rho h^{4}\omega^{2}}{E}S_{N-1}y_{N-1},\\
+I_{N-1}\left(y_{N-2}-2y_{N-1}+y_{N}\right)-2I_{N}\left(y_{N-1}-2y_{N}\right) & =\frac{\rho_{x}h^{4}\omega^{2}}{EI}y_{N},
+\end{cases}
+\]
+što se matrično može zapisati na način:
+\begin{equation}
+\underbrace{\left[\begin{array}{rrrrr}
+-2I_{1} & I_{2}\\
+I_{1} & -2I_{2} & I_{3}\\
+ & \ddots & \ddots & \ddots\\
+ &  & I_{N-2} & -2I_{N-1} & I_{N}\\
+ &  &  & I_{N-1} & -2I_{N}
+\end{array}\right]}_{M_{1}}\underbrace{\left[\begin{array}{rrrrr}
+-2 & 1\\
+1 & -2 & 1\\
+ & \ddots & \ddots & \ddots\\
+ &  & 1 & -2 & 1\\
+ &  &  & 1 & -2
+\end{array}\right]}_{M_{2}}y=\frac{\rho h^{4}\omega^{2}}{E}\underbrace{\left[\begin{array}{rrr}
+S_{1}\\
+ & \ddots\\
+ &  & S_{N}
+\end{array}\right]}_{M_{3}}y.\label{eq:Algebarski svojstveni problem za varijabilnu debljinu}
+\end{equation}
+Pri tome se vrijednosti $I_{i}$ i $S_{i}$, pomoću formula \eqref{eq:debljina}
+i \eqref{eq:presjek i inercija} računaju na na način:
+\begin{align}
+S_{i} & =b\left(d_{0}+\left(d_{L}-d_{0}\right)\frac{ih}{L}\right)\overset{\eqref{eq:duljina podintervala}}{=}b\left(d_{0}+\left(d_{L}-d_{0}\right)\frac{i}{N+1}\right),\label{eq:Presjek i inercija u =00010Dvorovima}\\
+I_{i} & =\frac{1}{12}b\,\left[d(x)\right]^{3}=\frac{S_{i}^{3}}{12b^{2}},\quad i=1,\,\dots,\,N.\nonumber 
+\end{align}
+Iz jednadžbi \eqref{eq:Presjek i inercija u =00010Dvorovima} vidi
+se da će matrica $M_{3},$ u slučaju $d_{L}\neq d_{0}$ imati sve
+različite vrijednosti na dijagonali, pa će biti regularna i njen inverz
+je dan formulom:
+\[
+M_{3}^{-1}=\left[\begin{array}{rrr}
+\frac{1}{S_{1}}\\
+ & \ddots\\
+ &  & \frac{1}{S_{N}}
+\end{array}\right].
+\]
+ U slučaju $d_{L}=d_{0}$ imamo identitetu, $M_{3}=bd_{0}I_{N}.$
+Množenjem jednadžbe \eqref{eq:Algebarski svojstveni problem za varijabilnu debljinu}
+s $M_{3}^{-1}$ slijeva dobivamo sljedeći algebarski problem svojstvenih
+vrijednosti:
+\begin{equation}
+\underbrace{\left(M_{3}^{-1}M_{1}M_{2}\right)}_{T_{1}(N)}y=\frac{\rho h^{4}\omega^{2}}{E}y\label{eq:svojstveni diskretni varijablina}
+\end{equation}
+
+
+
+\subsection{Numeričko rješavanje algebarskog problema svojstvenih vrijednosti}
+
+Prvih 10 dobivenih svojstvenih vrijednosti i prvih 5 svojstvenih funkcija
+prikazane su na Slikama \ref{fig:sv frekv var} i \ref{fig:sv funkc var},
+redom. Radi jednostavnosti su korišteni podaci $E=\rho=1,$ $L=1,$
+$b=0.1,$ $d_{0}=0.01,$ $d_{L}=0.03,$ iz čega je pomoću \eqref{eq:svojstveni diskretni varijablina}
+izračunata $\omega.$
+
+\begin{figure}
+\noindent \begin{centering}
+\includegraphics[width=1\textwidth,bb = 0 0 200 100, draft, type=eps]{frekvencije_var.pdf}
+\par\end{centering}
+
+\protect\caption{Prvih deset svojstvenih frekvencija u ovisnosti o $n,$ za $N=100.$\label{fig:sv frekv var}}
+\end{figure}
+\begin{figure}
+\noindent \begin{centering}
+\includegraphics[width=1\textwidth,bb = 0 0 200 100, draft, type=eps]{funkcije_var.pdf}
+\par\end{centering}
+
+\protect\caption{Prvih pet svojstvenih funkcija, dobivenih za $N=100,$ $E=\rho=1,$
+$L=1,$ $b=0.1,$ $d_{0}=0.01,$ $d_{L}=0.03$. \label{fig:sv funkc var}}
+\end{figure}
+
+\end{document}
